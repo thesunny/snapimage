@@ -33,10 +33,12 @@ module SnapImage
           @config = YAML::load(File.open(@raw_config))
         when ".json"
           @config = JSON::parse(File.read(@raw_config))
-        else raise SnapImage::UnknownFileType, "Unknown filetype. Expecting .yaml, .yml, or .json: #{@raw_config}"
+        else
+          raise SnapImage::UnknownFileType, "Unknown filetype. Expecting .yaml, .yml, or .json: #{@raw_config}"
         end
       end
 
+      raise SnapImage::MissingConfig, "Missing config." if @config.nil?
       raise SnapImage::UnknownConfigType, "Unknown config type. Expecting a filename or hash: #{@config}" unless @config.is_a? Hash
       validate_config
       set_config_defaults

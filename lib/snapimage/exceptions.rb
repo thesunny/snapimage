@@ -3,6 +3,7 @@ module SnapImage
   class InvalidConfig < StandardError; end
   class InvalidStorageConfig < StandardError; end
   class UnknownConfigType < StandardError; end
+  class MissingConfig < StandardError; end
 
   # Authorization.
   class AuthorizationRequired < StandardError; end
