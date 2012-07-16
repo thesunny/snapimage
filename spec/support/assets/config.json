@@ -1,0 +1,8 @@
+{
+  "security_salt": "abc123",
+  "primary_storage_server": "storage 1",
+  "storage_servers": [
+    { "name": "storage 1", "type": "test"},
+    { "name": "storage 2", "type": "test"}
+  ]
+}
