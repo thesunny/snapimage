@@ -9,7 +9,7 @@ describe SnapImage::Middleware do
   describe "#call" do
     it "passes the call through to the rack app when the path does not match" do
       @app.should_receive(:call).with(@env).and_return("app")
-      middleware = SnapImage::Middleware.new(@app)
+      middleware = SnapImage::Middleware.new(@app, config: {})
       middleware.call(@env).should eq "app"
     end
 
@@ -20,7 +20,7 @@ describe SnapImage::Middleware do
 
       @app.should_not_receive(:call)
 
-      middleware = SnapImage::Middleware.new(@app, "/test")
+      middleware = SnapImage::Middleware.new(@app, config: {}, path: "/test")
       middleware.call(@env).should eq "server"
     end
   end

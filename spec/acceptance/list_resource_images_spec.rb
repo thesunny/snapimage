@@ -22,16 +22,18 @@ describe "List Resource Images" do
       end
       SnapImage::Middleware.new(
         app,
-        "/snapimage_api",
-        "primary_storage_server" => "local",
-        "storage_servers" => [
-          {
-            "name" => "local",
-            "type" => "LOCAL",
-            "local_root" => File.join(RSpec.root, "storage"),
-            "public_url" => "//example.com/images"
-          }
-        ]
+        path: "/snapimage_api",
+        config: {
+          "primary_storage_server" => "local",
+          "storage_servers" => [
+            {
+              "name" => "local",
+              "type" => "LOCAL",
+              "local_root" => File.join(RSpec.root, "storage"),
+              "public_url" => "//example.com/images"
+            }
+          ]
+        }
       )
     end
 
@@ -75,29 +77,32 @@ describe "List Resource Images" do
       end
       SnapImage::Middleware.new(
         app,
-        "/snapimage_api",
-        "security_salt" => "123456789",
-        "primary_storage_server" => "local",
-        "storage_servers" => [
-          {
-            "name" => "local",
-            "type" => "LOCAL",
-            "local_root" => File.join(RSpec.root, "storage"),
-            "public_url" => "//example.com/images"
-          }
-        ]
+        path: "/snapimage_api",
+        config: {
+          "security_salt" => "123456789",
+          "primary_storage_server" => "local",
+          "storage_servers" => [
+            {
+              "name" => "local",
+              "type" => "LOCAL",
+              "local_root" => File.join(RSpec.root, "storage"),
+              "public_url" => "//example.com/images"
+            }
+          ]
+        }
       )
     end
 
     before do
-      @client_security_token = Digest::SHA1.hexdigest("client:#{Time.now.strftime("%Y-%m-%d")}:123456789:#{@resource_id_1}")
+      @client_security_token_1 = Digest::SHA1.hexdigest("client:#{Time.now.strftime("%Y-%m-%d")}:123456789:#{@resource_id_1}")
+      @client_security_token_2 = Digest::SHA1.hexdigest("client:#{Time.now.strftime("%Y-%m-%d")}:123456789:#{@resource_id_2}")
       @server_security_token = Digest::SHA1.hexdigest("server:#{Time.now.strftime("%Y-%m-%d")}:123456789:#{@resource_id_1}")
 
       # Store some images.
       json = {
         action: "generate_image",
         resource_identifier: @resource_id_1,
-        client_security_token: @client_security_token
+        client_security_token: @client_security_token_1
       }.to_json
       post "/snapimage_api", "file" => Rack::Test::UploadedFile.new(@image_path, "image/png"), "json" => json
       @url_1 = JSON.parse(last_response.body)["image_url"]
@@ -107,7 +112,7 @@ describe "List Resource Images" do
       json = {
         action: "generate_image",
         resource_identifier: @resource_id_2,
-        client_security_token: @client_security_token
+        client_security_token: @client_security_token_2
       }.to_json
       post "/snapimage_api", "file" => Rack::Test::UploadedFile.new(@image_path, "image/png"), "json" => json
       @url_3 = JSON.parse(last_response.body)["image_url"]

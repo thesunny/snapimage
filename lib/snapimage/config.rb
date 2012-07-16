@@ -1,14 +1,10 @@
 module SnapImage
   class Config
-    # TODO: If no config is given, set defaults.
-    # For example, if it's a Rails app, set the filename to
-    # config/snapimage.yml.
-    # TODO: Config checks.
     # Arguments:
     # * config:: Filename of the YAML or JSOn file to load or a config Hash.
     #
     # NOTE: All keys are strings, not symbols.
-    def initialize(config = nil)
+    def initialize(config)
       @raw_config = config
     end
 
@@ -38,7 +34,6 @@ module SnapImage
         end
       end
 
-      raise SnapImage::MissingConfig, "Missing config." if @config.nil?
       raise SnapImage::UnknownConfigType, "Unknown config type. Expecting a filename or hash: #{@config}" unless @config.is_a? Hash
       validate_config
       set_config_defaults

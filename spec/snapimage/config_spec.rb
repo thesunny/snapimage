@@ -2,11 +2,6 @@ require "spec_helper"
 
 describe SnapImage::Config do
   describe "#get_config" do
-    it "raises when no config is given" do
-      config = SnapImage::Config.new
-      expect { config.get_config }.to raise_error SnapImage::MissingConfig
-    end
-
     it "raises when the config is not a String or Hash" do
       config = SnapImage::Config.new(1)
       expect { config.get_config }.to raise_error SnapImage::UnknownConfigType

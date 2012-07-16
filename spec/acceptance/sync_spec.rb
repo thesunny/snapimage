@@ -21,16 +21,18 @@ describe "Sync" do
       end
       SnapImage::Middleware.new(
         app,
-        "/snapimage_api",
-        "primary_storage_server" => "local",
-        "storage_servers" => [
-          {
-            "name" => "local",
-            "type" => "LOCAL",
-            "local_root" => File.join(RSpec.root, "storage"),
-            "public_url" => "//example.com/images"
-          }
-        ]
+        path: "/snapimage_api",
+        config: {
+          "primary_storage_server" => "local",
+          "storage_servers" => [
+            {
+              "name" => "local",
+              "type" => "LOCAL",
+              "local_root" => File.join(RSpec.root, "storage"),
+              "public_url" => "//example.com/images"
+            }
+          ]
+        }
       )
     end
 
@@ -184,17 +186,19 @@ describe "Sync" do
       end
       SnapImage::Middleware.new(
         app,
-        "/snapimage_api",
-        "security_salt" => "123456789",
-        "primary_storage_server" => "local",
-        "storage_servers" => [
-          {
-            "name" => "local",
-            "type" => "LOCAL",
-            "local_root" => File.join(RSpec.root, "storage"),
-            "public_url" => "//example.com/images"
-          }
-        ]
+        path: "/snapimage_api",
+        config: {
+          "security_salt" => "123456789",
+          "primary_storage_server" => "local",
+          "storage_servers" => [
+            {
+              "name" => "local",
+              "type" => "LOCAL",
+              "local_root" => File.join(RSpec.root, "storage"),
+              "public_url" => "//example.com/images"
+            }
+          ]
+        }
       )
     end
 
