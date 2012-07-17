@@ -19,7 +19,7 @@ module SnapImage
     def type
       return @type if @type
       @type = @file[:type].split("/").last
-      @type = "jpg" if type == "jpeg"
+      @type = "jpg" if type == "jpeg" || type == "pjpeg"
       @type
     end
   end
