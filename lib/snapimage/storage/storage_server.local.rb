@@ -113,7 +113,7 @@ module SnapImage
       def file_modified_before_timestamp?(filename, timestamp = nil)
         # File.mtime returns a Time object. Convert it to a DateTime because
         # timestamp is a DateTime.
-        !timestamp || DateTime.parse(File.mtime(filename).iso8601) < timestamp
+        !timestamp || File.mtime(filename).to_datetime < timestamp
       end
     end
   end

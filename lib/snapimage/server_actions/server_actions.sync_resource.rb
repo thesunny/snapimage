@@ -67,7 +67,9 @@ module SnapImage
       def sync
         urls_to_delete = @storage.get_resource_urls(
           @request.json["resource_identifier"],
-          DateTime.parse(@request.json["sync_date_time"]) - 3
+          # DateTime only deals with years and days. We need to convert to a
+          # Time first to handle seconds, then convert back to a DateTime.
+          (DateTime.parse(@request.json["sync_date_time"]).to_time - 3).to_datetime
         ) - urls_to_keep
         urls_to_delete.each { |url| @storage.delete(url) }
       end

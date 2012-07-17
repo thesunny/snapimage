@@ -65,7 +65,7 @@ describe "Sync" do
           body: "Some #{@url_1} and another '#{@url_2}'",
           footer: "This is #{@url_3} a footer"
         },
-        sync_date_time: (DateTime.now + 3).iso8601,
+        sync_date_time: (DateTime.now.to_time + 3).to_datetime.iso8601,
         resource_identifier: @resource_id
       }.to_json
       post "/snapimage_api", "json" => json
@@ -142,7 +142,7 @@ describe "Sync" do
         content: {
           body: "Some #{@url_2} and another '#{url_3_modified}'"
         },
-        sync_date_time: (DateTime.now + 4).iso8601,
+        sync_date_time: (DateTime.now.to_time + 4).to_datetime.iso8601,
         resource_identifier: @resource_id
       }.to_json
       post "/snapimage_api", "json" => json
@@ -165,7 +165,7 @@ describe "Sync" do
         content: {
           body: "Some #{@url_2} and #{@url_3}"
         },
-        sync_date_time: (@before_4 + 3).iso8601,
+        sync_date_time: (@before_4.to_time + 3).to_datetime.iso8601,
         resource_identifier: @resource_id
       }.to_json
       post "/snapimage_api", "json" => json
@@ -221,7 +221,7 @@ describe "Sync" do
         content: {
           body: "Some #{@url_1}",
         },
-        sync_date_time: (DateTime.now + 3).iso8601,
+        sync_date_time: (DateTime.now.to_time + 3).to_datetime.iso8601,
         resource_identifier: @resource_id
       }
     end
