@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+require "optparse"
+
+options = {
+  file: "snapimage_config.yml",
+  force: false
+}
+
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: snapimage_generate_config [options]"
+
+  opts.on("-f", "--file FILE", "File to generate (Default: snapimage_config.yml)") do |file|
+    options[:file] = file
+  end
+
+  opts.on("--force", "Overwrites the file if it exists") do
+    options[:force] = true
+  end
+
+  opts.on("-h", "--help", "Display the help screen") do
+    puts opts
+    exit
+  end
+end
+optparse.parse!
+
+if !options[:force] && File.exists?(options[:file])
+  puts "File '#{options[:file]}' already exists. Use --force if you want to overwrite."
+  puts "Config file not generated."
+  puts
+  puts optparse.help
+  exit
+end
+
+File.open(options[:file], "w") do |f|
+  f.write(<<-EOF
+primary_storage_server: "local"
+storage_servers:
+  -
+    name: "local"
+    type: "LOCAL"
+    # Change local_root to where you want to store all the images.
+    local_root: "/path/to/the/storage/directory"
+    # Change public_url to where they will be served from.
+    public_url: "//localhost:3000/storage"
+EOF
+  )
+end
+puts "Config file generated at '#{options[:file]}'."
+puts
+puts "Now make sure you go and modify at least local_path and public_url."
