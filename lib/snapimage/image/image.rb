@@ -57,6 +57,10 @@ module SnapImage
       @image.to_blob
     end
 
+    def destroy!
+      @image.destroy!
+    end
+
     # Crops the image with the given parameters and returns a SnapImage::Image
     # object.
     #

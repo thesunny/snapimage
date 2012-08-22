@@ -102,6 +102,8 @@ module SnapImage
           resized_image = image.resize([image.width, @config["max_width"]].min, [image.height, @config["max_height"]].min)
           # Generate a new name.
           resized_name = SnapImage::ImageNameUtils.get_resized_image_name(name, resized_image.width, resized_image.height)
+          # Release memory.
+          image.destroy!
         end
         { image: resized_image || image, name: resized_name || name }
       end
