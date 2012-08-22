@@ -39,6 +39,7 @@ set :run, true
 # Set up Sinatra.
 set :environment, :production
 set :port, options[:port]
+set :server, "thin"
 
 use SnapImage::Middleware, options
 
