@@ -9,7 +9,7 @@ options = {
 optparse = OptionParser.new do |opts|
   opts.banner = "Usage: snapimage_server config [options]"
 
-  opts.on("-p", "--port", "Set the port (Default: 54321") do |port|
+  opts.on("-p", "--port", "Set the port (Default: 54321)") do |port|
     options[:port] = port
   end
 
