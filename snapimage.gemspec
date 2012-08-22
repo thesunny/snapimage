@@ -19,6 +19,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency("rmagick")
   gem.add_dependency("sinatra")
   gem.add_dependency("thin")
+  gem.add_dependency("rake")
 
   gem.add_development_dependency("rspec")
   gem.add_development_dependency("autotest")
