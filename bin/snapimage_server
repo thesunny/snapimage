@@ -7,7 +7,7 @@ options = {
 }
 
 optparse = OptionParser.new do |opts|
-  opts.banner = "Usage: snapimage_server [options] config"
+  opts.banner = "Usage: snapimage_server config [options]"
 
   opts.on("-p", "--port", "Set the port (Default: 54321") do |port|
     options[:port] = port
@@ -38,7 +38,7 @@ set :run, true
 
 # Set up Sinatra.
 set :environment, :production
-set :port, options.delete(:port)
+set :port, options[:port]
 
 use SnapImage::Middleware, options
 
@@ -48,7 +48,7 @@ get "/crossdomain.xml" do
   <!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd">
   <cross-domain-policy>
 
-    <allow-access-from domain="*" to-ports="54321" />
+    <allow-access-from domain="*" to-ports="#{options[:port]}" />
 
   </cross-domain-policy>
   XML
