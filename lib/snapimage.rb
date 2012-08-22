@@ -1,4 +1,5 @@
 require "rack"
+require "yaml"
 require "json"
 require "fileutils"
 require "digest/sha1"
