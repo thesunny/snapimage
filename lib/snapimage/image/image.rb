@@ -29,12 +29,14 @@ module SnapImage
     # Arguments:
     # * path:: Local path or URL
     def set_image_from_path(path)
+      destroy!
       @image = Magick::ImageList.new(path)
     end
 
     # Arguments:
     # * blob:: Image blob
     def set_image_from_blob(blob)
+      destroy!
       @image = Magick::ImageList.new
       @image.from_blob(blob)
     end
@@ -42,6 +44,7 @@ module SnapImage
     # Arguments:
     # * image:: RMagick Image
     def set_image_from_image(image)
+      destroy!
       @image = image
     end
 
@@ -58,11 +61,10 @@ module SnapImage
     end
 
     def destroy!
-      @image.destroy!
+      @image.destroy! if @image && !@image.destroyed?
     end
 
-    # Crops the image with the given parameters and returns a SnapImage::Image
-    # object.
+    # Crops the image with the given parameters.
     #
     # Arguments:
     # * x:: x coordinate of the top left corner
@@ -70,10 +72,10 @@ module SnapImage
     # * width:: width of the crop rectangle
     # * height:: height of the crop rectangle
     def crop(x, y, width, height)
-      SnapImage::Image.from_image(@image.crop(x, y, width, height))
+      @image.crop!(x, y, width, height)
     end
 
-    # Generates a new resized image and returns it as a SnapImage::Image object.
+    # Resizes the image with the given paramaters.
     #
     # Arguments:
     # * width:: Width to resize to
@@ -85,16 +87,17 @@ module SnapImage
       # resizing.
       height ||= [width, @image.rows].max
       if maintain_aspect_ratio
-        SnapImage::Image.from_image(@image.resize_to_fit(width, height))
+        @image.resize_to_fit!(width, height)
       else
-        SnapImage::Image.from_image(@image.resize(width, height))
+        @image.resize!(width, height)
       end
     end
 
-    # Generates a new sharpened image and returns it as a SnapImage::Image
-    # object.
+    # Sharpens the image.
     def sharpen
-      SnapImage::Image.from_image(@image.sharpen)
+      image = @image.sharpen
+      destroy!
+      @image = image
     end
   end
 end

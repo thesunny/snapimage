@@ -79,16 +79,16 @@ describe SnapImage::StorageServer::Base do
     end
 
     it "returns the resized image and name given a base image" do
-      image = @image.resize(2048, 100, false)
-      result = @server.send(:resize_to_fit, image, "12345678-2048x100.png")
+      @image.resize(2048, 100, false)
+      result = @server.send(:resize_to_fit, @image, "12345678-2048x100.png")
       result[:image].width.should eq 1024
       result[:image].height.should eq 50
       result[:name].should eq "12345678-1024x50.png"
     end
 
     it "returns the resized image and name given a modified image" do
-      image = @image.resize(2048, 100, false)
-      result = @server.send(:resize_to_fit, image, "12345678-1x1-0x0x1x1-2048x100-0.png")
+      @image.resize(2048, 100, false)
+      result = @server.send(:resize_to_fit, @image, "12345678-1x1-0x0x1x1-2048x100-0.png")
       result[:image].width.should eq 1024
       result[:image].height.should eq 50
       result[:name].should eq "12345678-1x1-0x0x1x1-1024x50-0.png"

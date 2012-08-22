@@ -26,7 +26,7 @@ module SnapImage
             image_height: stored_image.height
           )
           # Release memory.
-          stored_image.destroy!
+          GC.start
         else
           @response.set_bad_request
         end
@@ -122,10 +122,7 @@ module SnapImage
             width: @request.json["crop_width"],
             height: @request.json["crop_height"]
           }
-          cropped_image = image.crop(crop[:x], crop[:y], crop[:width], crop[:height])
-          # Release memory.
-          image.destroy!
-          image = cropped_image
+          image.crop(crop[:x], crop[:y], crop[:width], crop[:height])
         end
 
         # Resize.
@@ -136,34 +133,21 @@ module SnapImage
           if width && height
             # When both width and height are specified, resize without
             # maintaining the aspect ratio.
-            resized_image = image.resize(width, height, false)
+            image.resize(width, height, false)
           else
             # When only one of width/height is specified, set the other to the
             # max and maintain the aspect ratio.
-            resized_image = image.resize(width || @config["max_width"], height || @config["max_height"])
+            image.resize(width || @config["max_width"], height || @config["max_height"])
           end
-          # Release memeory.
-          image.destroy!
-          image = resized_image
         end
 
         # Resize to fit.
         resized_to_fit = resize_to_fit?(image)
-        if resized_to_fit
-          resized_image = image.resize(get_max_width, get_max_height)
-          # Release memeory.
-          image.destroy!
-          image = resized_image
-        end
+        image.resize(get_max_width, get_max_height) if resized_to_fit
 
         # Sharpen.
         sharpened = sharpen?
-        if sharpened
-          sharpened_image = image.sharpen
-          # Release memeory.
-          image.destroy!
-          image = sharpened_image
-        end
+        image.sharpen if sharpened
 
         # Get the dimensions at the end.
         if cropped || resized || resized_to_fit || sharpened
