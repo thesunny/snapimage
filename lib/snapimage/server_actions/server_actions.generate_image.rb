@@ -25,6 +25,8 @@ module SnapImage
             image_width: stored_image.width,
             image_height: stored_image.height
           )
+          # Release memory.
+          stored_image.destroy!
         else
           @response.set_bad_request
         end
