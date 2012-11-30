@@ -1,12 +1,7 @@
 module SnapImage
   class Request < Rack::Request
     def bad_request?
-      !(self.post? && self.POST["json"] && self.json["action"] && self.json["resource_identifier"])
-    end
-
-    # NOTE: Call bad_request? first to make sure there is json to parse.
-    def json
-      @json ||= JSON.parse(self.POST["json"])
+      !(self.post? && self.POST["file"] && self.POST["directory"])
     end
 
     # Returns a SnapImage::RequestFile which encapsulates the file that Rack
