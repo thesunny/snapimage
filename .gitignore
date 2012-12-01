@@ -17,3 +17,5 @@ test/tmp
 test/version_tmp
 tmp
 /vendor/bundle
+/storage
+snapimage_config.yml
