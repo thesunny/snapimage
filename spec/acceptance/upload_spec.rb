@@ -23,7 +23,7 @@ describe "Upload" do
       SnapImage::Middleware.new(
         app,
         path: "/snapimage_api",
-        config: { "directory" => File.join(RSpec.root, "storage") }
+        config: { "directory" => File.join(RSpec.root, "storage"), "max_file_size" => 600 }
       )
     end
 
@@ -41,34 +41,28 @@ describe "Upload" do
       end
 
       it "stores the image" do
-        json = JSON.parse(last_response.body)
         path = File.join(@local_root, @directory, File.basename(@image_path))
         File.exist?(path).should be_true
       end
     end
 
-    #context "upload too large" do
-      #before do
-        #json = { action: "generate_image", resource_identifier: @resource_id }.to_json
-        #post "/snapimage_api", "file" => Rack::Test::UploadedFile.new(@large_image_path, "image/png"), "json" => json
-      #end
+    context "upload too large" do
+      before do
+        post "/snapimage_api", "file" => Rack::Test::UploadedFile.new(@large_image_path, "image/png"), "directory" => @directory
+      end
 
-      #it "resizes successfully" do
-        #last_response.should be_successful
-        #last_response["Content-Type"].should eq "text/json"
-        #json = JSON.parse(last_response.body)
-        #json["status_code"].should eq 200
-        #json["message"].should eq "Get Modified Image Successful"
-        #json["image_url"].should match Regexp.new("^//example.com/images/abc/123/[a-z0-9]{8}-1024x50.png$")
-        #json["image_width"].should eq 1024
-        #json["image_height"].should eq 50
-      #end
+      it "fails" do
+        last_response.should be_successful
+        last_response["Content-Type"].should eq "text/json"
+        json = JSON.parse(last_response.body)
+        json["status_code"].should eq 405
+        json["message"].should eq "File Too Large"
+      end
 
-      #it "stores the image" do
-        #json = JSON.parse(last_response.body)
-        #path = File.join(@local_root, @resource_id, File.basename(json["image_url"]))
-        #File.exist?(path).should be_true
-      #end
-    #end
+      it "does not store the image" do
+        path = File.join(@local_root, @directory, File.basename(@image_path))
+        File.exist?(path).should be_false
+      end
+    end
   end
 end
