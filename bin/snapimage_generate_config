@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
 
 require "optparse"
+require "fileutils"
 
 options = {
-  file: "snapimage_config.yml",
+  file: "config/snapimage_config.yml",
   size: 10485760,
   force: false
 }
@@ -17,7 +18,7 @@ optparse = OptionParser.new do |opts|
   opts.separator ""
   opts.separator "Options:"
 
-  opts.on("-f", "--file FILE", "File to generate (Default: snapimage_config.yml)") do |file|
+  opts.on("-f", "--file FILE", "File to generate (Default: config/snapimage_config.yml)") do |file|
     options[:file] = file
   end
 
@@ -51,6 +52,7 @@ if !options[:force] && File.exists?(options[:file])
   exit
 end
 
+FileUtils.mkdir_p(File.dirname(options[:file]))
 File.open(options[:file], "w") do |f|
   f.write(<<-EOF
 directory: "#{local_root}"
