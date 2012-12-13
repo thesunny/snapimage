@@ -9,14 +9,11 @@ module SnapImage
     end
 
     def validate_config
-      raise SnapImage::InvalidConfig, 'Missing "primary_storage_server"' unless @config["primary_storage_server"]
-      raise SnapImage::InvalidConfig, 'Missing "storage_servers"' unless @config["storage_servers"]
-      raise SnapImage::InvalidConfig, '"storage_servers" must be an array' unless @config["storage_servers"].is_a? Array
+      raise SnapImage::InvalidConfig, 'Missing "directory"' unless @config["directory"]
     end
 
     def set_config_defaults
-      @config["max_width"] ||= 1024
-      @config["max_height"] ||= 2048
+      @config["max_file_size"] ||= 10485760 # 10MB
     end
 
     def get_config
@@ -42,10 +39,6 @@ module SnapImage
 
     def [](key)
       get_config[key]
-    end
-
-    def storage
-      @storage ||= SnapImage::Storage.new(get_config["storage_servers"], get_config["primary_storage_server"], get_config["max_width"], get_config["max_height"])
     end
   end
 end

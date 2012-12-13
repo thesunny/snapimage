@@ -1,24 +1,29 @@
 #!/usr/bin/env ruby
 
 require "optparse"
+require "fileutils"
 
 options = {
-  file: "snapimage_config.yml",
+  file: "config/snapimage_config.yml",
+  size: 10485760,
   force: false
 }
 
 optparse = OptionParser.new do |opts|
-  opts.banner = "Usage: snapimage_generate_config local_root public_url [options]"
+  opts.banner = "Usage: snapimage_generate_config local_root [options]"
 
   opts.separator ""
   opts.separator "local_root\tPath to the directory where the images will be stored"
-  opts.separator "public_url\tURL at which the images will accessible from"
 
   opts.separator ""
   opts.separator "Options:"
 
-  opts.on("-f", "--file FILE", "File to generate (Default: snapimage_config.yml)") do |file|
+  opts.on("-f", "--file FILE", "File to generate (Default: config/snapimage_config.yml)") do |file|
     options[:file] = file
+  end
+
+  opts.on("-s", "--size SIZE", "Max file size in bytes (Default: 10485760)") do |size|
+    options[:size] = size.to_i
   end
 
   opts.on("--force", "Overwrites the file if it exists") do
@@ -32,13 +37,12 @@ optparse = OptionParser.new do |opts|
 end
 optparse.parse!
 
-unless ARGV.length == 2
+unless ARGV.length == 1
   puts optparse.help
   exit
 end
 
 local_root = ARGV[0]
-public_url = ARGV[1]
 
 if !options[:force] && File.exists?(options[:file])
   puts "File '#{options[:file]}' already exists. Use --force if you want to overwrite."
@@ -48,15 +52,11 @@ if !options[:force] && File.exists?(options[:file])
   exit
 end
 
+FileUtils.mkdir_p(File.dirname(options[:file]))
 File.open(options[:file], "w") do |f|
   f.write(<<-EOF
-primary_storage_server: "local"
-storage_servers:
-  -
-    name: "local"
-    type: "LOCAL"
-    local_root: "#{local_root}"
-    public_url: "#{public_url}"
+directory: "#{local_root}"
+max_file_size: #{options[:size]}
 EOF
   )
 end

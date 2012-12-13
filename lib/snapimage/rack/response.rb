@@ -18,28 +18,28 @@ module SnapImage
       @json = { status_code: 400, message: "Bad Request" }
     end
 
-    def set_authorization_required
-      @json = { status_code: 401, message: "Authorization Required" }
+    #def set_authorization_required
+      #@json = { status_code: 401, message: "Authorization Required" }
+    #end
+
+    #def set_authorization_failed
+      #@json = { status_code: 402, message: "Authorization Failed" }
+    #end
+
+    def set_invalid_filename
+      @json = { status_code: 403, message: "Invalid Filename" }
     end
 
-    def set_authorization_failed
-      @json = { status_code: 402, message: "Authorization Failed" }
+    def set_invalid_directory
+      @json = { status_code: 404, message: "Invalid Directory" }
     end
 
-    def set_invalid_image_identifier
-      @json = { status_code: 403, message: "Invalid Image Identifier" }
-    end
-
-    def set_invalid_resource_identifier
-      @json = { status_code: 404, message: "Invalid Resource Identifier" }
+    def set_file_too_large
+      @json = { status_code: 405, message: "File Too Large" }
     end
 
     def set_internal_server_error
       @json = { status_code: 500, message: "Internal Server Error" }
-    end
-
-    def set_not_implemented
-      @json = { status_code: 501, message: "Not Implemented" }
     end
 
     def finish

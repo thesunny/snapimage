@@ -7,14 +7,18 @@ options = {
 }
 
 optparse = OptionParser.new do |opts|
-  opts.banner = "Usage: snapimage_server config [options]"
+  opts.banner = "Usage: snapimage_server [options]"
 
   opts.on("-p", "--port PORT", "Set the port (Default: 54321)") do |port|
-    options[:port] = port
+    options[:port] = port.to_i
   end
 
   opts.on("--path PATH", "Set the URL path of the SnapImage API Server (Default: /snapimage_api)") do |path|
     options[:path] = path
+  end
+
+  opts.on("-c", "--config CONFIG", "Config file (Default: config/snapimage_config.yml") do |config|
+    options[:config] = config
   end
 
   opts.on("-h", "--help", "Display the help screen") do
@@ -23,12 +27,6 @@ optparse = OptionParser.new do |opts|
   end
 end
 optparse.parse!
-
-unless ARGV.length == 1
-  puts optparse.help
-  exit
-end
-options[:config] = ARGV[0]
 
 require "sinatra"
 require "snapimage"

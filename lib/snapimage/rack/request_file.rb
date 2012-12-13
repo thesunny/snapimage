@@ -12,15 +12,12 @@ module SnapImage
       @file = file
     end
 
-    def file
+    def tempfile
       @file[:tempfile]
     end
 
-    def type
-      return @type if @type
-      @type = File.extname(@file[:filename])[1..-1]
-      @type = "jpg" if type == "jpeg"
-      @type
+    def filename
+      @file[:filename]
     end
   end
 end
