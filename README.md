@@ -1,6 +1,6 @@
 # Snapimage
 
-TODO: Write a gem description
+SnapImage is a Rack middleware that supports server-side image uploading for [SnapEditor](http://snapeditor.com), an online HTML5 WYSIWYG text editor. It also provides a self-contained server that is ready to roll.
 
 ## Installation
 
@@ -16,9 +16,34 @@ Or install it yourself as:
 
     $ gem install snapimage
 
+## Configuration
+
+Generate a config file (default is "config/snapimage\_config.yml"). SnapImage comes with a script to do that.
+
+    $ snapimage_generate_config <local root>
+
+The local root argument is a path that tells SnapImage where to store the uploaded files. For other options, use the -h flag.
+
+    $ snapimage_generate_config -h
+
 ## Usage
 
-TODO: Write usage instructions here
+The middleware class is SnapImage::Middleware. It takes the following options.
+
+    path: The URL path that SnapImage listens to and accepts image uploads from (default is "/snapimage_api").
+    config: The path to the config file (default is "config/snapimage_config.yml").
+
+### Rails
+
+Add the following to application.rb.
+
+    config.middleware.use SnapImage::Middleware
+
+### Other Rack Applications
+
+Add the following to your server.
+
+    use SnapImage::Middleware
 
 ## Contributing
 
