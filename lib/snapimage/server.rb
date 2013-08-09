@@ -24,7 +24,7 @@ module SnapImage
         FileUtils.mkdir_p(directory)
         # Save the file.
         File.open(file_path, "wb") { |f| f.write(@request.file.tempfile.read) } unless File.exists?(file_path)
-        @response.set_success(url: File.join(@config["public_url"], file_path))
+        @response.set_success(url: File.join(@config["public_url"], @request["directory", @request.file.filename]))
       rescue SnapImage::BadRequest
         @response.set_bad_request
       #rescue SnapImage::AuthorizationRequired
