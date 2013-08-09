@@ -3,7 +3,7 @@ require "spec_helper"
 describe SnapImage::Server do
   before do
     @request = double("request")
-    @config = { "directory" => "/directory", "max_file_size" => 100 }
+    @config = { "directory" => "/directory", "public_url" => "http://snapimage.com/public", "max_file_size" => 100 }
     @server = SnapImage::Server.new(@request, @config)
   end
 
@@ -68,7 +68,7 @@ describe SnapImage::Server do
       response = @server.call
       response[0].should eq 200
       response[1]["Content-Type"].should eq "text/json"
-      response[2].body.should eq ['{"status_code":200,"message":"Success"}']
+      response[2].body.should eq ['{"status_code":200,"url":"http://snapimage.com/public/directory/abc/123/abc123.png","message":"Success"}']
     end
 
     it "returns success when the file is saved" do
@@ -86,7 +86,7 @@ describe SnapImage::Server do
       response = @server.call
       response[0].should eq 200
       response[1]["Content-Type"].should eq "text/json"
-      response[2].body.should eq ['{"status_code":200,"message":"Success"}']
+      response[2].body.should eq ['{"status_code":200,"url":"http://snapimage.com/public/directory/abc/123/abc123.png","message":"Success"}']
     end
   end
 end

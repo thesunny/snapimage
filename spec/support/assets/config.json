@@ -1,4 +1,5 @@
 {
   "directory": "/path/to/directory",
+  "public_url": "http://snapimage.com/public/url",
   "max_file_size": 100
 }

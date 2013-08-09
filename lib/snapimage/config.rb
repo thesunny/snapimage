@@ -10,6 +10,7 @@ module SnapImage
 
     def validate_config
       raise SnapImage::InvalidConfig, 'Missing "directory"' unless @config["directory"]
+      raise SnapImage::InvalidConfig, 'Missing "public_url"' unless @config["public_url"]
     end
 
     def set_config_defaults

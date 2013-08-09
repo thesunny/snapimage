@@ -10,10 +10,13 @@ options = {
 }
 
 optparse = OptionParser.new do |opts|
-  opts.banner = "Usage: snapimage_generate_config local_root [options]"
+  opts.banner = "Usage: snapimage_generate_config local_root public_url [options]"
 
   opts.separator ""
   opts.separator "local_root\tPath to the directory where the images will be stored"
+
+  opts.separator ""
+  opts.separator "public_url\tPublic URL to where the images will be accessible"
 
   opts.separator ""
   opts.separator "Options:"
@@ -37,12 +40,13 @@ optparse = OptionParser.new do |opts|
 end
 optparse.parse!
 
-unless ARGV.length == 1
+unless ARGV.length == 2
   puts optparse.help
   exit
 end
 
 local_root = ARGV[0]
+public_url = ARGV[1]
 
 if !options[:force] && File.exists?(options[:file])
   puts "File '#{options[:file]}' already exists. Use --force if you want to overwrite."
@@ -56,6 +60,7 @@ FileUtils.mkdir_p(File.dirname(options[:file]))
 File.open(options[:file], "w") do |f|
   f.write(<<-EOF
 directory: "#{local_root}"
+public_url: "#{public_url}"
 max_file_size: #{options[:size]}
 EOF
   )
