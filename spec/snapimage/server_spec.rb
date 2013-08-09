@@ -68,7 +68,7 @@ describe SnapImage::Server do
       response = @server.call
       response[0].should eq 200
       response[1]["Content-Type"].should eq "text/json"
-      response[2].body.should eq ['{"status_code":200,"url":"http://snapimage.com/public/directory/abc/123/abc123.png","message":"Success"}']
+      response[2].body.should eq ['{"status_code":200,"url":"http://snapimage.com/public/abc/123/abc123.png","message":"Success"}']
     end
 
     it "returns success when the file is saved" do
@@ -86,7 +86,7 @@ describe SnapImage::Server do
       response = @server.call
       response[0].should eq 200
       response[1]["Content-Type"].should eq "text/json"
-      response[2].body.should eq ['{"status_code":200,"url":"http://snapimage.com/public/directory/abc/123/abc123.png","message":"Success"}']
+      response[2].body.should eq ['{"status_code":200,"url":"http://snapimage.com/public/abc/123/abc123.png","message":"Success"}']
     end
   end
 end
