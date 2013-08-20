@@ -38,6 +38,7 @@ describe "Upload" do
         json = JSON.parse(last_response.body)
         json["status_code"].should eq 200
         json["message"].should eq "Success"
+        json["url"].should eq "http://snapimage.com/public/abc/123/stub-300x200.png"
       end
 
       it "stores the image" do
@@ -49,24 +50,34 @@ describe "Upload" do
     context "upload duplicate files" do
       before do
         @times = 12
-        @times.times do
-          post "/snapimage_api", "file" => Rack::Test::UploadedFile.new(@image_path, "image/png"), "directory" => @directory
-        end
       end
 
       it "is successful" do
-        last_response.should be_successful
-        last_response["Content-Type"].should eq "text/json"
-        json = JSON.parse(last_response.body)
-        json["status_code"].should eq 200
-        json["message"].should eq "Success"
+        @times.times do |i|
+          post "/snapimage_api", "file" => Rack::Test::UploadedFile.new(@image_path, "image/png"), "directory" => @directory
+          last_response.should be_successful
+          last_response["Content-Type"].should eq "text/json"
+          json = JSON.parse(last_response.body)
+          json["status_code"].should eq 200
+          json["message"].should eq "Success"
+          if i == 0
+            json["url"].should eq "http://snapimage.com/public/abc/123/stub-300x200.png"
+          else
+            json["url"].should eq "http://snapimage.com/public/abc/123/stub-300x200(#{i}).png"
+          end
+        end
       end
 
       it "stores the images" do
         ext = File.extname(@image_path)
         basename = File.basename(@image_path, ext)
-        (1..@times - 1).each do |i|
-          path = File.join(@local_root, @directory, "#{basename}(#{i})#{ext}")
+        @times.times do |i|
+          post "/snapimage_api", "file" => Rack::Test::UploadedFile.new(@image_path, "image/png"), "directory" => @directory
+          if i == 0
+            path = File.join(@local_root, @directory, "#{basename}#{ext}")
+          else
+            path = File.join(@local_root, @directory, "#{basename}(#{i})#{ext}")
+          end
           File.exist?(path).should be_true
         end
       end
