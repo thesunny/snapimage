@@ -16,15 +16,16 @@ module SnapImage
       begin
         raise SnapImage::BadRequest if @request.bad_request?
         raise SnapImage::InvalidFilename unless @request.file.filename =~ SnapImage::Server::FILENAME_REGEXP
-        raise SnapImage::InvalidDirectory unless @request["directory"] =~ SnapImage::Server::DIRECTORY_REGEXP
+        directory = @request["directory"] || "uncategorized"
+        raise SnapImage::InvalidDirectory unless directory =~ SnapImage::Server::DIRECTORY_REGEXP
         raise SnapImage::FileTooLarge if @request.file.tempfile.size > @config["max_file_size"]
-        directory = File.join(@config["directory"], @request["directory"])
-        file_path = File.join(directory, @request.file.filename)
+        file_directory = File.join(@config["directory"], directory)
+        file_path = File.join(file_directory, @request.file.filename)
         # Make sure the directory exists.
-        FileUtils.mkdir_p(directory)
+        FileUtils.mkdir_p(file_directory)
         # Save the file.
         File.open(file_path, "wb") { |f| f.write(@request.file.tempfile.read) } unless File.exists?(file_path)
-        @response.set_success(url: File.join(@config["public_url"], @request["directory"], @request.file.filename))
+        @response.set_success(url: File.join(@config["public_url"], directory, @request.file.filename))
       rescue SnapImage::BadRequest
         @response.set_bad_request
       #rescue SnapImage::AuthorizationRequired
