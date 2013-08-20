@@ -54,23 +54,6 @@ describe SnapImage::Server do
       response[2].body.should eq ['{"status_code":405,"message":"File Too Large"}']
     end
 
-    it "returns success when the file already exists" do
-      @request.stub(:bad_request?).and_return(false)
-      tempfile = double("tempfile")
-      tempfile.stub(:size).and_return(50)
-      file = double("file")
-      file.stub(:filename).and_return("abc123.png")
-      file.stub(:tempfile).and_return(tempfile)
-      @request.stub(:file).and_return(file)
-      @request.stub(:[]).with("directory").and_return("abc/123")
-      File.stub(:exists?).and_return(true)
-      FileUtils.stub(:mkdir_p)
-      response = @server.call
-      response[0].should eq 200
-      response[1]["Content-Type"].should eq "text/json"
-      response[2].body.should eq ['{"status_code":200,"url":"http://snapimage.com/public/abc/123/abc123.png","message":"Success"}']
-    end
-
     it "returns success when the file is saved" do
       @request.stub(:bad_request?).and_return(false)
       tempfile = double("tempfile")
@@ -105,6 +88,25 @@ describe SnapImage::Server do
       response[0].should eq 200
       response[1]["Content-Type"].should eq "text/json"
       response[2].body.should eq ['{"status_code":200,"url":"http://snapimage.com/public/uncategorized/abc123.png","message":"Success"}']
+    end
+  end
+
+  describe "#get_file_path" do
+    it "returns a simple file path when the file doesn't exist" do
+      File.stub(:exists?).and_return(false)
+      @server.send(:get_file_path, "abc/123", "pic.png").should eq "abc/123/pic.png"
+    end
+
+    it "returns the file path appended with (1) when only the file exists" do
+      File.stub(:exists?).and_return(true)
+      Dir.stub(:glob).and_return([])
+      @server.send(:get_file_path, "abc/123", "pic.png").should eq "abc/123/pic(1).png"
+    end
+
+    it "returns the file path appended with the next number when multiple files exist" do
+      File.stub(:exists?).and_return(true)
+      Dir.stub(:glob).and_return(["abc/123/pic(10).png", "abc/123/pic(2).png"])
+      @server.send(:get_file_path, "abc/123", "pic.png").should eq "abc/123/pic(11).png"
     end
   end
 end

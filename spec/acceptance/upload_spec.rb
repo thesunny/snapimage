@@ -46,6 +46,32 @@ describe "Upload" do
       end
     end
 
+    context "upload duplicate files" do
+      before do
+        @times = 12
+        @times.times do
+          post "/snapimage_api", "file" => Rack::Test::UploadedFile.new(@image_path, "image/png"), "directory" => @directory
+        end
+      end
+
+      it "is successful" do
+        last_response.should be_successful
+        last_response["Content-Type"].should eq "text/json"
+        json = JSON.parse(last_response.body)
+        json["status_code"].should eq 200
+        json["message"].should eq "Success"
+      end
+
+      it "stores the images" do
+        ext = File.extname(@image_path)
+        basename = File.basename(@image_path, ext)
+        (1..@times - 1).each do |i|
+          path = File.join(@local_root, @directory, "#{basename}(#{i})#{ext}")
+          File.exist?(path).should be_true
+        end
+      end
+    end
+
     context "upload too large" do
       before do
         post "/snapimage_api", "file" => Rack::Test::UploadedFile.new(@large_image_path, "image/png"), "directory" => @directory
