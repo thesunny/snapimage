@@ -12,7 +12,11 @@ module SnapImage
 
     # Handles the request and returns a Rack::Response.
     def call
-      @response = SnapImage::Response.new
+      # If the request is not an XHR, the response type should be text/html or
+      # text/plain. This affects browsers like IE8/9 when performing uploads
+      # through an iframe transport. If we return using text/json, the browser
+      # attempts to download the file instead.
+      @response = SnapImage::Response.new(content_type: @request.xhr? ? "text/json" : "text/html")
       begin
         raise SnapImage::BadRequest if @request.bad_request?
         raise SnapImage::InvalidFilename unless @request.file.filename =~ SnapImage::Server::FILENAME_REGEXP
