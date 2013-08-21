@@ -18,14 +18,6 @@ module SnapImage
       @json = { status_code: 400, message: "Bad Request" }
     end
 
-    #def set_authorization_required
-      #@json = { status_code: 401, message: "Authorization Required" }
-    #end
-
-    #def set_authorization_failed
-      #@json = { status_code: 402, message: "Authorization Failed" }
-    #end
-
     def set_invalid_filename
       @json = { status_code: 403, message: "Invalid Filename" }
     end
