@@ -1,7 +1,7 @@
 module SnapImage
   class Request < Rack::Request
     def bad_request?
-      !(self.post? && self.POST["file"] && self.POST["directory"])
+      !(self.post? && self.POST["file"])
     end
 
     # Returns a SnapImage::RequestFile which encapsulates the file that Rack
