@@ -34,7 +34,7 @@ describe "Upload" do
 
       it "is successful" do
         last_response.should be_successful
-        last_response["Content-Type"].should eq "text/json"
+        last_response["Content-Type"].should eq "text/html"
         json = JSON.parse(last_response.body)
         json["status_code"].should eq 200
         json["message"].should eq "Success"
@@ -56,7 +56,7 @@ describe "Upload" do
         @times.times do |i|
           post "/snapimage_api", "file" => Rack::Test::UploadedFile.new(@image_path, "image/png"), "directory" => @directory
           last_response.should be_successful
-          last_response["Content-Type"].should eq "text/json"
+          last_response["Content-Type"].should eq "text/html"
           json = JSON.parse(last_response.body)
           json["status_code"].should eq 200
           json["message"].should eq "Success"
@@ -90,7 +90,7 @@ describe "Upload" do
 
       it "fails" do
         last_response.should be_successful
-        last_response["Content-Type"].should eq "text/json"
+        last_response["Content-Type"].should eq "text/html"
         json = JSON.parse(last_response.body)
         json["status_code"].should eq 405
         json["message"].should eq "File Too Large"

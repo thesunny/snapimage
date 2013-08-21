@@ -3,6 +3,7 @@ require "spec_helper"
 describe SnapImage::Server do
   before do
     @request = double("request")
+    @request.stub(:xhr?).and_return(true)
     @config = { "directory" => "/directory", "public_url" => "http://snapimage.com/public", "max_file_size" => 100 }
     @server = SnapImage::Server.new(@request, @config)
   end
@@ -69,6 +70,25 @@ describe SnapImage::Server do
       response = @server.call
       response[0].should eq 200
       response[1]["Content-Type"].should eq "text/json"
+      response[2].body.should eq ['{"status_code":200,"url":"http://snapimage.com/public/abc/123/abc123.png","message":"Success"}']
+    end
+
+    it "returns content type of text/html when non-XHR" do
+      @request.stub(:xhr?).and_return(false)
+      @request.stub(:bad_request?).and_return(false)
+      tempfile = double("tempfile")
+      tempfile.stub(:size).and_return(50)
+      file = double("file")
+      file.stub(:filename).and_return("abc123.png")
+      file.stub(:tempfile).and_return(tempfile)
+      @request.stub(:file).and_return(file)
+      @request.stub(:[]).with("directory").and_return("abc/123")
+      File.stub(:exists?).and_return(false)
+      FileUtils.stub(:mkdir_p)
+      File.should_receive(:open).with("/directory/abc/123/abc123.png", "wb").once
+      response = @server.call
+      response[0].should eq 200
+      response[1]["Content-Type"].should eq "text/html"
       response[2].body.should eq ['{"status_code":200,"url":"http://snapimage.com/public/abc/123/abc123.png","message":"Success"}']
     end
 
