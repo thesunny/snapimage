@@ -6,7 +6,7 @@ module SnapImage
       @content_type = options[:content_type] || "text/json"
       @template = options[:template] || "{{json}}"
       @json = {}
-      super
+      super()
     end
 
     def set_success(info = {})
@@ -35,7 +35,7 @@ module SnapImage
     end
 
     def finish
-      self.body = [@template.gsub(/{{json}}/, @json.to_json)]
+      write(@template.gsub(/{{json}}/, @json.to_json))
       self["Content-Type"] = @content_type
       super
     end
