@@ -59,6 +59,7 @@ end
 FileUtils.mkdir_p(File.dirname(options[:file]))
 File.open(options[:file], "w") do |f|
   f.write(<<-EOF
+adapter: "local"
 directory: "#{local_root}"
 public_url: "#{public_url}"
 max_file_size: #{options[:size]}

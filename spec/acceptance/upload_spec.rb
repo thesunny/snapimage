@@ -23,7 +23,12 @@ describe "Upload" do
       SnapImage::Middleware.new(
         app,
         path: "/snapimage_api",
-        config: { "directory" => File.join(RSpec.root, "storage"), "public_url" => "http://snapimage.com/public", "max_file_size" => 600 }
+        config: {
+          "adapter" => "local",
+          "directory" => File.join(RSpec.root, "storage"),
+          "public_url" => "http://snapimage.com/public",
+          "max_file_size" => 600
+        }
       )
     end
 

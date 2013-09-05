@@ -5,9 +5,10 @@ module SnapImage
 
     # Arguments:
     # * request:: Rack::Request
-    def initialize(request, config)
+    def initialize(request, config, storage)
       @request = request
       @config = config
+      @storage = storage
     end
 
     # Handles the request and returns a Rack::Response.
@@ -23,13 +24,8 @@ module SnapImage
         directory = @request["directory"] || "uncategorized"
         raise SnapImage::InvalidDirectory unless directory =~ SnapImage::Server::DIRECTORY_REGEXP
         raise SnapImage::FileTooLarge if @request.file.tempfile.size > @config["max_file_size"]
-        file_directory = File.join(@config["directory"], directory)
-        file_path = get_file_path(file_directory, @request.file.filename)
-        # Make sure the directory exists.
-        FileUtils.mkdir_p(file_directory)
-        # Save the file.
-        File.open(file_path, "wb") { |f| f.write(@request.file.tempfile.read) } unless File.exists?(file_path)
-        @response.set_success(url: File.join(@config["public_url"], directory, File.basename(file_path)))
+        url = @storage.store(@request.file.filename, @request.file.tempfile, directory: directory)
+        @response.set_success(url: url)
       rescue SnapImage::BadRequest
         @response.set_bad_request
       #rescue SnapImage::AuthorizationRequired
@@ -47,27 +43,5 @@ module SnapImage
       end
       @response.finish
     end
-
-    private
-
-    # Gets the file path from the given directory and filename.
-    # If the file path already exists, appends a (1) to the basename.
-    # If there are already multiple files, appends the next (num) in the
-    # sequence.
-    def get_file_path(directory, filename)
-      file_path = File.join(directory, filename)
-      if File.exists?(file_path)
-        ext = File.extname(filename)
-        basename = File.basename(filename, ext)
-        files = Dir.glob(File.join(directory, "#{basename}([0-9]*)#{ext}"))
-        if files.size == 0
-          num = 1
-        else
-          num = files.map { |f| f.match(/\((\d+)\)/)[1].to_i }.sort.last + 1
-        end
-        file_path = "#{File.join(directory, basename)}(#{num})#{ext}"
-      end
-      file_path
-     end
   end
 end

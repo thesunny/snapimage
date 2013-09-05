@@ -12,12 +12,13 @@ module SnapImage
       @app = app
       @path = options[:path] || "/snapimage_api"
       @config = SnapImage::Config.new(options[:config] || "config/snapimage_config.yml")
+      @storage = SnapImage::Storage.new(@config)
     end
 
     def call(env)
       request = SnapImage::Request.new(env)
       if request.path_info == @path
-        SnapImage::Server.new(request, @config).call
+        SnapImage::Server.new(request, @config, @storage).call
       else
         @app.call(env)
       end

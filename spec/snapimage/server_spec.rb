@@ -5,7 +5,8 @@ describe SnapImage::Server do
     @request = double("request")
     @request.stub(:xhr?).and_return(true)
     @config = { "directory" => "/directory", "public_url" => "http://snapimage.com/public", "max_file_size" => 100 }
-    @server = SnapImage::Server.new(@request, @config)
+    @storage = double("storage")
+    @server = SnapImage::Server.new(@request, @config, @storage)
   end
 
   describe "#call" do
@@ -64,9 +65,7 @@ describe SnapImage::Server do
       file.stub(:tempfile).and_return(tempfile)
       @request.stub(:file).and_return(file)
       @request.stub(:[]).with("directory").and_return("abc/123")
-      File.stub(:exists?).and_return(false)
-      FileUtils.stub(:mkdir_p)
-      File.should_receive(:open).with("/directory/abc/123/abc123.png", "wb").once
+      @storage.should_receive(:store).with("abc123.png", tempfile, directory: "abc/123").and_return("http://snapimage.com/public/abc/123/abc123.png")
       response = @server.call
       response[0].should eq 200
       response[1]["Content-Type"].should eq "text/json"
@@ -83,9 +82,7 @@ describe SnapImage::Server do
       file.stub(:tempfile).and_return(tempfile)
       @request.stub(:file).and_return(file)
       @request.stub(:[]).with("directory").and_return("abc/123")
-      File.stub(:exists?).and_return(false)
-      FileUtils.stub(:mkdir_p)
-      File.should_receive(:open).with("/directory/abc/123/abc123.png", "wb").once
+      @storage.should_receive(:store).with("abc123.png", tempfile, directory: "abc/123").and_return("http://snapimage.com/public/abc/123/abc123.png")
       response = @server.call
       response[0].should eq 200
       response[1]["Content-Type"].should eq "text/html"
@@ -101,32 +98,11 @@ describe SnapImage::Server do
       file.stub(:tempfile).and_return(tempfile)
       @request.stub(:file).and_return(file)
       @request.stub(:[]).with("directory").and_return(nil)
-      File.stub(:exists?).and_return(false)
-      FileUtils.stub(:mkdir_p)
-      File.should_receive(:open).with("/directory/uncategorized/abc123.png", "wb").once
+      @storage.should_receive(:store).with("abc123.png", tempfile, directory: "uncategorized").and_return("http://snapimage.com/public/uncategorized/abc123.png")
       response = @server.call
       response[0].should eq 200
       response[1]["Content-Type"].should eq "text/json"
       response[2].body.should eq ['{"status_code":200,"url":"http://snapimage.com/public/uncategorized/abc123.png","message":"Success"}']
-    end
-  end
-
-  describe "#get_file_path" do
-    it "returns a simple file path when the file doesn't exist" do
-      File.stub(:exists?).and_return(false)
-      @server.send(:get_file_path, "abc/123", "pic.png").should eq "abc/123/pic.png"
-    end
-
-    it "returns the file path appended with (1) when only the file exists" do
-      File.stub(:exists?).and_return(true)
-      Dir.stub(:glob).and_return([])
-      @server.send(:get_file_path, "abc/123", "pic.png").should eq "abc/123/pic(1).png"
-    end
-
-    it "returns the file path appended with the next number when multiple files exist" do
-      File.stub(:exists?).and_return(true)
-      Dir.stub(:glob).and_return(["abc/123/pic(10).png", "abc/123/pic(2).png"])
-      @server.send(:get_file_path, "abc/123", "pic.png").should eq "abc/123/pic(11).png"
     end
   end
 end

@@ -9,8 +9,9 @@ module SnapImage
     end
 
     def validate_config
-      raise SnapImage::InvalidConfig, 'Missing "directory"' unless @config["directory"]
-      raise SnapImage::InvalidConfig, 'Missing "public_url"' unless @config["public_url"]
+      raise SnapImage::InvalidConfig, 'Missing "adapter"' unless @config["adapter"]
+      raise SnapImage::InvalidConfig, "Unknown adapter type. Expecting local or cloudinary: #{@config["adapter"]}" unless @config["adapter"]
+      SnapImage.const_get(@config["adapter"].capitalize).const_get("Config").new(@config).validate_config
     end
 
     def set_config_defaults
