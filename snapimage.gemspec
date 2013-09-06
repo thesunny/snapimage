@@ -16,7 +16,6 @@ Gem::Specification.new do |gem|
   gem.version       = SnapImage::VERSION
 
   gem.add_dependency("rack")
-  gem.add_dependency("rmagick")
   gem.add_dependency("sinatra")
   gem.add_dependency("thin")
   gem.add_dependency("rake")
