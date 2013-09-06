@@ -10,8 +10,10 @@ module SnapImage
       # Options: none
       def store(filename, file, options = {})
         ext = File.extname(filename)
-        response = Cloudinary::Uploader.upload(file, use_filename: true)
-        Cloudinary::Utils.cloudinary_url(response["public_id"] + ext)
+        basename = File.basename(filename, ext)
+        public_id = "#{basename}(#{rand(9999)})"
+        response = ::Cloudinary::Uploader.upload(file, public_id: public_id)
+        ::Cloudinary::Utils.cloudinary_url(public_id + ext)
       end
     end
   end
