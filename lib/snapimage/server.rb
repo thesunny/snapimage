@@ -34,8 +34,6 @@ module SnapImage
         @response.set_invalid_directory
       rescue SnapImage::FileTooLarge
         @response.set_file_too_large
-      rescue
-        @response.set_internal_server_error
       end
       @response.finish
     end
