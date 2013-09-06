@@ -20,13 +20,9 @@ Or install it yourself as:
 
 Generate a config file (default is "config/snapimage\_config.yml"). SnapImage comes with a script to do that.
 
-    $ snapimage_generate_config <local root> <public url>
+    $ snapimage_generate_config <adapter> [options]
 
-The local root argument is a path that tells SnapImage where to store the uploaded files.
-
-The public url argument is a public URL where the images can be accessed from.
-
-For other options, use the -h flag.
+For details, use the -h flag.
 
     $ snapimage_generate_config -h
 
