@@ -28,10 +28,6 @@ module SnapImage
         @response.set_success(url: url)
       rescue SnapImage::BadRequest
         @response.set_bad_request
-      #rescue SnapImage::AuthorizationRequired
-        #@response.set_authorization_required
-      #rescue SnapImage::AuthorizationFailed
-        #@response.set_authorization_failed
       rescue SnapImage::InvalidFilename
         @response.set_invalid_filename
       rescue SnapImage::InvalidDirectory
