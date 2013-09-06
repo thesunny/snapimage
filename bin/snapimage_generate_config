@@ -10,13 +10,10 @@ options = {
 }
 
 optparse = OptionParser.new do |opts|
-  opts.banner = "Usage: snapimage_generate_config local_root public_url [options]"
+  opts.banner = "Usage: snapimage_generate_config <adapter> [options]"
 
   opts.separator ""
-  opts.separator "local_root\tPath to the directory where the images will be stored"
-
-  opts.separator ""
-  opts.separator "public_url\tPublic URL to where the images will be accessible"
+  opts.separator "adapter\tStorage adapter to use (local, cloudinary)"
 
   opts.separator ""
   opts.separator "Options:"
@@ -27,6 +24,14 @@ optparse = OptionParser.new do |opts|
 
   opts.on("-s", "--size SIZE", "Max file size in bytes (Default: 10485760)") do |size|
     options[:size] = size.to_i
+  end
+
+  opts.on("-r", "--local_root PATH", "Path to the directory where the images will be stored (only for the local adapter and must be specified)") do |local_root|
+    options[:local_root] = local_root
+  end
+
+  opts.on("-u", "--public_url URL", "Public URL to where the images will be accessible (only for the local adapter and must be specified)") do |public_url|
+    options[:public_url] = public_url
   end
 
   opts.on("--force", "Overwrites the file if it exists") do
@@ -40,13 +45,28 @@ optparse = OptionParser.new do |opts|
 end
 optparse.parse!
 
-unless ARGV.length == 2
+unless ARGV.length == 1
+  puts "Missing adapter."
+  puts
   puts optparse.help
   exit
 end
+adapter = ARGV[0]
 
-local_root = ARGV[0]
-public_url = ARGV[1]
+# Check for mandatory options.
+if adapter == "local"
+  if !options[:local_root] or !options[:public_url]
+    puts "When using the local adapter, local_root and public_url must be specified."
+    puts
+    puts optparse.help
+    exit
+  end
+elsif adapter == "cloudinary"
+  # Nothing to check for.
+else
+  puts optparse.help
+  exit
+end
 
 if !options[:force] && File.exists?(options[:file])
   puts "File '#{options[:file]}' already exists. Use --force if you want to overwrite."
@@ -58,12 +78,19 @@ end
 
 FileUtils.mkdir_p(File.dirname(options[:file]))
 File.open(options[:file], "w") do |f|
-  f.write(<<-EOF
+  if adapter == "local"
+    f.write(<<-EOF
 adapter: "local"
-directory: "#{local_root}"
-public_url: "#{public_url}"
+directory: "#{options[:local_root]}"
+public_url: "#{options[:public_url]}"
 max_file_size: #{options[:size]}
-EOF
-  )
+    EOF
+    )
+  elsif adapter == "cloudinary"
+    f.write(<<-EOF
+adapter: "cloudinary"
+    EOF
+    )
+  end
 end
 puts "Config file generated at '#{options[:file]}'."
