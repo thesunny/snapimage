@@ -1,7 +1,7 @@
 module SnapImage
   class Server
-    DIRECTORY_REGEXP = /^[a-z0-9_-]+(\/[a-z0-9_-]+)*$/
-    FILENAME_REGEXP = /^[^\/]+[.](gif|jpg|jpeg|png)$/
+    DIRECTORY_REGEXP = /^[a-z0-9_-]+(\/[a-z0-9_-]+)*$/i
+    FILENAME_REGEXP = /^[^\/]+[.](gif|jpg|jpeg|png)$/i
 
     # Arguments:
     # * request:: Rack::Request
